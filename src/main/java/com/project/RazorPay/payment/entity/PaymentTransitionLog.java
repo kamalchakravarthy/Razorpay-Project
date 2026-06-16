@@ -1,4 +1,4 @@
-package com.project.RazorPay.payment;
+package com.project.RazorPay.payment.entity;
 
 import com.project.RazorPay.common.enums.PaymentActor;
 import com.project.RazorPay.common.enums.PaymentEvent;
