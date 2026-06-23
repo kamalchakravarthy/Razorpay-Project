@@ -1,12 +1,14 @@
 package com.project.RazorPay.common;
 
 import jakarta.persistence.Embeddable;
-import lombok.AllArgsConstructor;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 @Embeddable
 @AllArgsConstructor
 @NoArgsConstructor
+@Getter
+@Setter
+@EqualsAndHashCode
 public class Money {
     private Integer amountUnits;
     private String currency;
