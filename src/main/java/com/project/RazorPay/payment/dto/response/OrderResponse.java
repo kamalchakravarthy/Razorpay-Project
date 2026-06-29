@@ -1,6 +1,6 @@
 package com.project.RazorPay.payment.dto.response;
 
-import com.project.RazorPay.common.Money;
+import com.project.RazorPay.common.entity.Money;
 import com.project.RazorPay.common.enums.OrderStatus;
 
 import java.time.LocalDateTime;

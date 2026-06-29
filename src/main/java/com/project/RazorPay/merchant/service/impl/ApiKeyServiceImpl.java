@@ -7,6 +7,7 @@ import com.project.RazorPay.merchant.dto.response.ApiKeyResponse;
 import com.project.RazorPay.merchant.dto.response.ApikeyCreateResponse;
 import com.project.RazorPay.merchant.entity.ApiKey;
 import com.project.RazorPay.merchant.entity.Merchant;
+import com.project.RazorPay.merchant.mapper.ApiKeyMapper;
 import com.project.RazorPay.merchant.repository.ApiKeyRepository;
 import com.project.RazorPay.merchant.repository.MerchantRepository;
 import com.project.RazorPay.merchant.service.ApiKeyService;
@@ -25,6 +26,7 @@ public class ApiKeyServiceImpl implements ApiKeyService {
 
     private final ApiKeyRepository apiKeyRepository;
     private final MerchantRepository merchantRepository;
+    private final ApiKeyMapper apiKeyMapper;
 
     @Override
     @Transactional
@@ -54,15 +56,7 @@ public class ApiKeyServiceImpl implements ApiKeyService {
 
         Merchant merchant = merchantRepository.findById(merchantId).orElseThrow(() -> new ResourceNotFoundException("Merchant", merchantId));
 
-        return apiKeyRepository.findByMerchant_Id(merchantId).stream()
-                .map(apiKey ->
-                        new ApiKeyResponse(
-                                apiKey.getId(),
-                                apiKey.getKeyId(),
-                                apiKey.getEnvironment(),
-                                apiKey.isEnabled(),
-                                apiKey.getLastUsedAt()))
-                .toList();
+        return apiKeyMapper.toResponseList(apiKeyRepository.findByMerchant_Id(merchantId));
     }
 
     @Override
@@ -90,6 +84,8 @@ public class ApiKeyServiceImpl implements ApiKeyService {
         ApiKey apiKey = apiKeyRepository.findById(apiKeyId)
                 .filter(k -> k.getMerchant().getId().equals(merchantId))
                 .orElseThrow(() -> new ResourceNotFoundException("ApiKey", apiKeyId));
+
+        if(!apiKey.isEnabled()) throw new RuntimeException("Cannot rotate disabled Api Key");
 
         String newRawSecret = RandomizerUtil.randomBase64(40);
         String prevSecret = apiKey.getKeySecretHash();  // TODO: encode with BCryptEncoder
